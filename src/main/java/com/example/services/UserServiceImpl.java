@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.common.PasswordStorage;
 import com.example.controllers.LoginController;
+import com.example.exceptions.CannotPerformOperationException;
 import com.example.models.Role;
 import com.example.models.User;
 import com.example.repositories.RoleRepository;
@@ -21,9 +23,6 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private RoleRepository roleRepo;
 	
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
 	@Override
 	public User findByEmail(String email) {
 		
@@ -31,8 +30,12 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
-	public void saveUser(User user) {
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+	public void saveUser(User user){
+		try {
+			user.setPassword(new PasswordStorage().createHash(user.getPassword()));
+		} catch (CannotPerformOperationException e) {
+			logger.info(e.getMessage());
+		}
 		user.setActive(1);
 		Role userRole = roleRepo.findByRole("USER");
 		user.setRole(userRole);

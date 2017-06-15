@@ -22,8 +22,11 @@ public class BlogController {
 	public String welcomeHomePage(Model model, Principal principal){
 		List<Post> latest5Posts = postService.findLatest5();
 		model.addAttribute("latest5Posts", latest5Posts);
-		model.addAttribute("username",principal.getName());
-		
+		if(principal != null){
+			model.addAttribute("username",principal.getName());
+		} else {
+			model.addAttribute("username","User");
+		}
 		return "post/index";
 	}
 	

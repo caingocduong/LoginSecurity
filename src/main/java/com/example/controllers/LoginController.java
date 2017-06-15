@@ -11,11 +11,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.example.exceptions.UserAccessDeniedException;
+import com.example.exceptions.UserNotFoundException;
 import com.example.models.User;
 import com.example.services.UserService;
 
@@ -62,21 +65,34 @@ public class LoginController {
 	
 	
 	@GetMapping("/admin/home")
-	public String adminHome(Model model){
+	public String adminHome(Model model) throws Exception{
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userService.findByEmail(auth.getName());
-		//logger.info("->>>>>>"+auth.getAuthorities()); 
-		if(auth.getAuthorities().toString().equals("[ADMIN]")){
-			model.addAttribute("username","Hello "+user.getUsername()+"("+user.getEmail()+")");
-			model.addAttribute("adminMessage","Content Available Only for Users with Admin Role.");
+		if(user == null){
+			
+			throw new UserNotFoundException();
+		} else {
+			//logger.info("->>>>>>"+auth.getAuthorities()); 
+			if(auth.getAuthorities().toString().equals("[ADMIN]")){
+				model.addAttribute("username","Hello "+user.getUsername()+"("+user.getEmail()+")");
 
-			return "admin/home";
+				return "admin/home";
+			}
+			
+			throw new UserAccessDeniedException();
 		}
+	}
+	
+	@ExceptionHandler(UserNotFoundException.class)
+	public String handleUserNotFoundException(){
 		
-		model.addAttribute("username","Hello "+user.getUsername()+"("+user.getEmail()+")");
-		model.addAttribute("adminMessage","You don't have permission to access this page.");
+		return "user/login";
+	}
+	
+	@ExceptionHandler(UserAccessDeniedException.class)
+	public String handleUserAccessDeniedException(){
+		
 		return "admin/access-denied";
-		
 	}
 
 }

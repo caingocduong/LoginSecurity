@@ -5,6 +5,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.dao.ReflectionSaltSource;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,11 +15,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.example.common.PasswordStorage;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
 	
 	@Autowired
 	private DataSource dataSource;
@@ -29,11 +33,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
+		ShaPasswordEncoder encoder = new ShaPasswordEncoder();
 		auth.jdbcAuthentication()
 			.usersByUsernameQuery(usersQuery)
 			.authoritiesByUsernameQuery(rolesQuery)
 			.dataSource(dataSource)
-			.passwordEncoder(bCryptPasswordEncoder);
+			.passwordEncoder(encoder);
 	}
 	
 	@Override
@@ -42,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 			.antMatchers("/").permitAll()
 			.antMatchers("/login").permitAll()
 			.antMatchers("/registration").permitAll()
+			.antMatchers("admin/**").hasRole("ADMIN")
 			.and()
 			.csrf().disable()
 			.formLogin().loginPage("/login")
