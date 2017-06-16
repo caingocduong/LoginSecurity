@@ -8,11 +8,15 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.exceptions.CannotPerformOperationException;
 import com.example.exceptions.InvalidHasException;
 
-public class PasswordStorage {
+public class PasswordStorage implements PasswordEncoder{
+	private static final Logger logger = LoggerFactory.getLogger(PasswordStorage.class);
 	public static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
 
 	// These constants may be changed without breaking existing hashes.
@@ -28,15 +32,12 @@ public class PasswordStorage {
 	public static final int SALT_INDEX = 3;
 	public static final int PBKDF2_INDEX = 4;
 	
-	public  String createHash(String password) throws CannotPerformOperationException{
+	public  String createHash(String password, byte[] salt) throws CannotPerformOperationException{
 		
-		return createHash(password.toCharArray());
+		return createHash(password.toCharArray(),salt);
 	}
 	
-	public static String createHash(char[] passwword) throws CannotPerformOperationException{
-		SecureRandom secureRandom = new SecureRandom();
-		byte[] salt = new byte[SALT_BYTE_SIZE];
-		secureRandom.nextBytes(salt);
+	public  String createHash(char[] passwword, byte[] salt) throws CannotPerformOperationException{
 		
 		byte[] hash = pbkdf2(passwword, salt, PBKDF2_ITERATIONS, HASH_BYTE_SIZE);
 		int hashSize = hash.length;
@@ -48,7 +49,15 @@ public class PasswordStorage {
 		return parts;
 	}
 	
-	private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes) 
+	public  byte[] createSalt(){
+		SecureRandom secureRandom = new SecureRandom();
+		byte[] salt = new byte[SALT_BYTE_SIZE];
+		secureRandom.nextBytes(salt);
+		
+		return salt;
+	}
+	
+	private  byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes) 
 			throws CannotPerformOperationException
 	{
 		try {
@@ -65,7 +74,7 @@ public class PasswordStorage {
 		}
 	}
 	
-	private static String toBase64(byte[] array){
+	private  String toBase64(byte[] array){
 		
 		return DatatypeConverter.printBase64Binary(array);
 	}
@@ -73,14 +82,14 @@ public class PasswordStorage {
 	
 	
 	
-	public static boolean verifyPassword(String password, String correctHash)
+	public  boolean verifyPassword(String password, String correctHash)
 			throws CannotPerformOperationException, InvalidHasException
 	{
 		
 		return verifyPassword(password.toCharArray(), correctHash);
 	}
 	
-	public static boolean verifyPassword(char[] password, String correctHash)
+	public  boolean verifyPassword(char[] password, String correctHash)
 			throws CannotPerformOperationException, InvalidHasException
 	{
 		String[] params = correctHash.split(":");
@@ -132,7 +141,7 @@ public class PasswordStorage {
 		return slowEquals(hash, testHash);
 	}
 	
-	private static boolean slowEquals(byte[] a, byte[] b){
+	private  boolean slowEquals(byte[] a, byte[] b){
 		int diff = a.length ^ b.length;
 		for(int i = 0; i < a.length && i < b.length; i++)
 			diff |= a[i]^b[i];
@@ -140,9 +149,37 @@ public class PasswordStorage {
 		return diff == 0;
 	}
 	
-	private static byte[] fromBase64(String hex) throws IllegalArgumentException{
+	private  byte[] fromBase64(String hex) throws IllegalArgumentException{
 		
 		return DatatypeConverter.parseBase64Binary(hex);
+	}
+
+	@Override
+	public String encode(CharSequence rawPassword) {
+		byte[] salt = createSalt();
+		try {
+			return createHash(rawPassword.toString(), salt);
+		} catch (CannotPerformOperationException e) {
+			logger.info(e.getMessage());
+		}
+		
+		return null;
+	}
+
+	@Override
+	public boolean matches(CharSequence rawPassword, String encodedPassword) {
+		try {
+			if(verifyPassword(rawPassword.toString(), encodedPassword)){
+				
+				return true;
+			}
+		} catch (CannotPerformOperationException e) {
+			logger.info(e.getMessage());
+		} catch (InvalidHasException e) {
+			logger.info(e.getMessage());
+		}
+		
+		return false;
 	}
 
 }

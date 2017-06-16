@@ -38,6 +38,9 @@ public class User {
 	@NotEmpty(message="Please provide user name.")
 	private String username;
 	
+	@Column
+	private String salt;
+	
 	@Column(name="active")
 	private int active;
 	@ManyToOne

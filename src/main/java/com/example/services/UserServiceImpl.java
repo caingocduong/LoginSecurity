@@ -3,11 +3,9 @@ package com.example.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.common.PasswordStorage;
-import com.example.controllers.LoginController;
 import com.example.exceptions.CannotPerformOperationException;
 import com.example.models.Role;
 import com.example.models.User;
@@ -32,7 +30,11 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void saveUser(User user){
 		try {
-			user.setPassword(new PasswordStorage().createHash(user.getPassword()));
+			PasswordStorage ps = new PasswordStorage();
+			byte[] salt = ps.createSalt();
+			String hash = ps.createHash(user.getPassword(), salt);
+			user.setPassword(hash);
+			user.setSalt(salt.toString());
 		} catch (CannotPerformOperationException e) {
 			logger.info(e.getMessage());
 		}

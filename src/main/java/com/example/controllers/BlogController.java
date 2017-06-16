@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.models.Post;
 import com.example.services.PostService;
@@ -19,8 +20,9 @@ public class BlogController {
 	PostService postService;
 	
 	@GetMapping({"/","/index"})
-	public String welcomeHomePage(Model model, Principal principal){
-		List<Post> latest5Posts = postService.findLatest5();
+	public String welcomeHomePage(@RequestParam(name="p",defaultValue="1") int pageNumber
+			,Model model, Principal principal){
+		List<Post> latest5Posts = postService.findLatest5(pageNumber);
 		model.addAttribute("latest5Posts", latest5Posts);
 		if(principal != null){
 			model.addAttribute("username",principal.getName());

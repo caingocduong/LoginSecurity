@@ -24,6 +24,7 @@ import com.example.services.UserService;
 
 @Controller
 public class LoginController {
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
 	@Autowired
