@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.common.PasswordStorage;
+import com.example.common.UserStatus;
 import com.example.exceptions.CannotPerformOperationException;
 import com.example.models.Role;
 import com.example.models.User;
@@ -13,6 +15,7 @@ import com.example.repositories.RoleRepository;
 import com.example.repositories.UserRepository;
 
 @Service
+@Transactional("transactionManager")
 public class UserServiceImpl implements UserService{
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 	@Autowired
@@ -38,7 +41,7 @@ public class UserServiceImpl implements UserService{
 		} catch (CannotPerformOperationException e) {
 			logger.info(e.getMessage());
 		}
-		user.setActive(1);
+		user.setUserStatus(UserStatus.ACTIVE.name());
 		Role userRole = roleRepo.findByRole("USER");
 		user.setRole(userRole);
 		userRepo.save(user);

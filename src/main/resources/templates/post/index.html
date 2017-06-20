@@ -2,37 +2,55 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="layout::head">
-	<meta charset="UTF-8" />
-	<title>Welcome to Spring MVC Blog</title>
+<meta charset="UTF-8" />
+<title>Welcome to Spring MVC Blog</title>
 </head>
 <body>
 	<header th:replace="layout::header"></header>
 	<div id="logged-in-info">
-			<span>Hello, <b th:text="${username}">(user)</b></span>
-			<form method="get" th:action="@{/login}">
-				<input type="submit" value="Logout" />
-			</form>
-		</div>
+		<span>Hello, <b th:text="${username}">(user)</b></span>
+		<form method="get" th:action="@{/login}">
+			<input type="submit" value="Logout" />
+		</form>
+	</div>
 	<aside>
 		<h2>Recent Posts</h2>
-		<a href="#" th:each="p:${latest5Posts}" th:text="${p.title}"
-					th:href="@{/posts/view/{id}/(id=${p.id})}">
-		Work begins on HTML5.1</a>
+		<a href="#" th:each="p:${posts}" th:text="${p.title}"
+			th:href="@{/posts/view/{id}(id=${p.id})}"> Work begins on HTML5.1</a>
 	</aside>
 	<main id="posts">
-	<article th:each="p:${latest5Posts}">
+	<article th:each="p:${posts}">
 		<h2 class="title" th:text="${p.title}">Post Title</h2>
 		<div class="date">
 			<i>Post on</i> <span th:text="${#dates.format(p.date,'dd-MMM-yyyy')}">
 				22-May-2017</span> <span th:if="${p.author}" th:remove="tag"> <i>by</i>
-				<span
-				th:text="${p.author}">Svetlin
-					Nakov</span>
+				<span th:text="${p.author}">Svetlin Nakov</span>
 			</span>
 		</div>
 		<p class="content" th:utext="${p.body}">Post content</p>
 	</article>
 	</main>
+	<div class="paginate wrapper">
+		<ul >
+			<li th:class="${page.firstPage}?'disabled':''">
+				<a href="#" th:if="${not page.firstPage}" th:href="@{${page.url}(page=0,size=${page.size})}">First</a> 
+			</li>
+			<li th:class="${page.hasPreviousPage}?'':'disabled'">
+				<a href="#" th:if="${page.hasPreviousPage}"  th:href="@{${page.url}(page=${page.number-2},size=${page.size})}">&laquo;</a> 
+			</li>
+			<li th:each="item:${page.items}" >
+				<a href="#" th:class="${item.current}?'active':''" th:href="@{${page.url}(page=${item.number-1},size=${page.size})}" th:text="${item.number}">
+					1
+				</a> 
+			</li>
+			<li th:class="${page.hasNextPage}?'':'disabled'">
+				<a th:if="${page.hasNextPage}" th:href="@{${page.url}(page=${page.number},size=${page.size})}">&raquo;</a>
+			</li>
+			<li th:class="${page.lastPage}?'disabled':''">
+				<a href="#" th:if="${not page.lastPage}" th:href="@{${page.url}(page=${page.totalPages-1},size=${page.size})}">Last</a>
+			</li>
+		</ul>
+	</div>
 	<footer th:replace="layout::footer"></footer>
 </body>
 

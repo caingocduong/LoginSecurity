@@ -2,6 +2,7 @@ package com.example.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,7 +21,7 @@ import lombok.Data;
 @Data
 public class User {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="user_id")
 	private int id;
 	
@@ -29,7 +30,7 @@ public class User {
 	@NotEmpty(message="Please provide an email.")
 	private String email;
 	
-	@Column(name="password")
+	@Column(name="password") 
 	@Length(min=6, message="Your password must have at least 6 characters.")
 	@NotEmpty(message="Please provide password.")
 	private String password;
@@ -41,9 +42,10 @@ public class User {
 	@Column
 	private String salt;
 	
-	@Column(name="active")
-	private int active;
-	@ManyToOne
+	@Column(name="user_status")
+	private String userStatus;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="roles_role_id")
 	private Role role;
 }
