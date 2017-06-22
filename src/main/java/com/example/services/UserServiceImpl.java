@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.common.PasswordStorage;
@@ -15,7 +16,6 @@ import com.example.repositories.RoleRepository;
 import com.example.repositories.UserRepository;
 
 @Service
-@Transactional("transactionManager")
 public class UserServiceImpl implements UserService{
 	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 	@Autowired
@@ -25,13 +25,22 @@ public class UserServiceImpl implements UserService{
 	private RoleRepository roleRepo;
 	
 	@Override
+	@Transactional(readOnly=true)
 	public User findByEmail(String email) {
 		
 		return userRepo.findByEmail(email);
 	}
 	
 	@Override
-	public void saveUser(User user){
+	@Transactional(propagation=Propagation.REQUIRED, rollbackFor=Exception.class)
+	public void saveUser(User user) throws RuntimeException{
+		Role role = new Role();
+		role.setId(3);
+		role.setRole("ADMIN_DATABASE");
+		roleRepo.save(role);
+		if(findByEmail(user.getEmail()) != null){
+			throw new RuntimeException("ERROR!!!");
+		}
 		try {
 			PasswordStorage ps = new PasswordStorage();
 			byte[] salt = ps.createSalt();

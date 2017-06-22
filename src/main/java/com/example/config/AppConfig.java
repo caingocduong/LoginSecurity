@@ -4,16 +4,18 @@ import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
+@ComponentScan("com.example.services")
 @EnableTransactionManagement
 public class AppConfig {
 	//=================================== Data ==================================================
@@ -47,12 +49,17 @@ public class AppConfig {
 		rb.setBasenames(new String[] { "messages/validator" });
 		return rb;
 	}
+	
 	// Transaction Manager
-	@Autowired
-	@Bean(name = "transactionManager")
-	public DataSourceTransactionManager getTransactionManager(DataSource dataSource) {
-		DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-
+	@Bean
+	public PlatformTransactionManager transactionManager() {
+		final PlatformTransactionManager transactionManager;
+		final JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+		
+		jpaTransactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+		jpaTransactionManager.setDataSource(dataSource());
+		transactionManager = jpaTransactionManager;
+		
 		return transactionManager;
 	}
 }

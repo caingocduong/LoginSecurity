@@ -14,6 +14,8 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.example.common.UserExceptionMessages;
+
 import lombok.Data;
 
 @Entity
@@ -26,17 +28,17 @@ public class User {
 	private int id;
 	
 	@Column(name="email")
-	@Email(message="Please provide a valid email.")
-	@NotEmpty(message="Please provide an email.")
+	@Email(message=UserExceptionMessages.INVALID_EMAIL_MESSAGE)
+	@NotEmpty(message=UserExceptionMessages.EMPTY_EMAIL_MESSAGE)
 	private String email;
 	
 	@Column(name="password") 
-	@Length(min=6, message="Your password must have at least 6 characters.")
-	@NotEmpty(message="Please provide password.")
+	@Length(min=6, message=UserExceptionMessages.INVALID_LENGTH_PASSWORD_MESSAGE)
+	@NotEmpty(message=UserExceptionMessages.EMPTY_PASSWORD_MESSAGE)
 	private String password;
 	
 	@Column(name="user_name")
-	@NotEmpty(message="Please provide user name.")
+	@NotEmpty(message=UserExceptionMessages.EMPTY_USERNAME_MESSAGE)
 	private String username;
 	
 	@Column
