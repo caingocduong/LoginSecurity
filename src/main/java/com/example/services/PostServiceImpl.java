@@ -1,6 +1,5 @@
 package com.example.services;
 
-
 import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
@@ -12,8 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.common.PostDTO;
+import com.example.common.PostMapper;
 import com.example.models.Post;
 import com.example.repositories.PostRepository;
+import com.querydsl.core.types.Predicate;
+import static com.example.common.PostPredicate.searchPostByAuthorIgnoreCase;
 
 @Service
 public class PostServiceImpl implements PostService{
@@ -63,6 +66,14 @@ public class PostServiceImpl implements PostService{
 	public Iterable<Post> listAllPosts() {
 		
 		return postRepo.findAll();
+	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public Page<PostDTO> findAll(String author, Pageable pageable) {
+		Predicate predicate = searchPostByAuthorIgnoreCase(author);
+		Page<Post> pageResult = postRepo.findAll(predicate, pageable);
+		return PostMapper.mapEntityPageIntoPage(pageable, pageResult);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import java.security.Principal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.example.common.PageWrapper;
+import com.example.common.PostDTO;
 import com.example.models.Post;
 import com.example.services.PostService;
 
@@ -45,5 +47,15 @@ public class BlogController {
 		model.addAttribute("post",post);
 		
 		return "post/view";
+	}
+	
+	@GetMapping("/posts/view/search/{author}")
+	public String listPostsOfOneAuthor(@PathVariable String author, Model model, Pageable pageable){
+		Page<PostDTO> resultPage = postService.findAll(author, pageable);
+		PageWrapper<PostDTO> page = new PageWrapper<PostDTO>(resultPage, "/index");
+		model.addAttribute("posts", resultPage.getContent());
+		model.addAttribute("page", page);
+		
+		return "post/index";
 	}
 }
