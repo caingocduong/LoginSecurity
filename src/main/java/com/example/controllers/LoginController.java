@@ -1,24 +1,19 @@
 package com.example.controllers;
 
 
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.example.exceptions.UserAccessDeniedException;
-import com.example.exceptions.UserNotFoundException;
 import com.example.models.User;
 import com.example.services.UserService;
 
@@ -29,7 +24,7 @@ public class LoginController {
 
 	@Autowired
 	private UserService userService;
-
+	
 	@GetMapping("/login")
 	public String login(){
 
@@ -63,37 +58,4 @@ public class LoginController {
 		}
 	}
 	
-	
-	
-	@GetMapping("/admin/home")
-	public String adminHome(Model model) throws Exception{
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		User user = userService.findByEmail(auth.getName());
-		if(user == null){
-			
-			throw new UserNotFoundException();
-		} else {
-			//logger.info("->>>>>>"+auth.getAuthorities()); 
-			if(auth.getAuthorities().toString().equals("[ADMIN]")){
-				model.addAttribute("username","Hello "+user.getUsername()+"("+user.getEmail()+")");
-
-				return "admin/home";
-			}
-			
-			throw new UserAccessDeniedException();
-		}
-	}
-	
-	@ExceptionHandler(UserNotFoundException.class)
-	public String handleUserNotFoundException(){
-		
-		return "user/login";
-	}
-	
-	@ExceptionHandler(UserAccessDeniedException.class)
-	public String handleUserAccessDeniedException(){
-		
-		return "admin/access-denied";
-	}
-
 }

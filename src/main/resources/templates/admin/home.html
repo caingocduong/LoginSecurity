@@ -3,32 +3,107 @@
 
 <head>
 <title>Admin Page</title>
-<link rel="stylesheet" type="text/css" href="../../static/css/home.css"  th:href="@{/css/home.css}" />
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-<script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../../static/css/home.css"
+	th:href="@{/css/home.css}" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
 <body>
 	<div class="container">
-	
+
 		<form th:action="@{/login}" method="get">
-			<button class="btn btn-md btn-danger btn-block"
-				type="Submit">Logout</button>
-		</form>    
-	
-		<div class="panel-group" style="margin-top:40px">
+			<button class="btn btn-md btn-danger btn-block" type="Submit">Logout</button>
+		</form>
+
+		<div class="panel-group" style="margin-top: 40px">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<span th:utext="${username}"></span>
+					<span th:text="#{admin.userManagement}">User Management</span>
 				</div>
 				<div class="panel-body">
-					<img src="../../static/images/admin.jpeg" th:src="@{/images/admin.jpeg}" class="img-responsive center-block" width="400" height="400" alt="Admin" /> 
+					<form action="#" th:action="@{/admin/home}" method="post">
+						<table class="rwd-table">
+							<thead>
+								<tr>
+									<th th:text="#{user.id}">User ID</th>
+									<th th:text="#{user.name}">User name</th>
+									<th th:text="#{user.email}">Email</th>
+									<th th:text="#{user.role}">Role</th>
+									<th th:text="#{user.status}">Status</th>
+									<th th:text="#{admin.actions}">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="user : ${allUsers}">
+									<td th:text="${user.id}">1</td>
+									<td th:text="${user.username}">darren</td>
+									<td th:text="${user.email}">darren@gmail.com</td>
+									<td th:text="${user.role.role}">ADMIN</td>
+									<td th:text="${user.userStatus}">ACTIVE</td>
+									<td>
+										<button class="button" type="submit" name="deleteUser"
+											th:value="${user.id}" th:text="#{admin.delete}">
+											Delete</button>
+										<button class="button" type="submit" name="edit"
+											th:value="${user.id}" th:text="#{admin.edit}">Edit</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</form>
 				</div>
-				<p class="admin-message-text text-center" th:utext="${adminMessage}"></p>
 			</div>
+
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<span th:text="#{admin.edit}+' User'">Edit User</span> 
+				</div>
+				<div class="panel-body">
+					<form action="#" th:if="${user}!=null" th:object="${user}" method="post" th:action="@{/admin/home}">
+						<table class="rwd-table">
+							<thead>
+								<tr>
+									<th th:text="#{user.id}">User ID</th>
+									<th th:text="#{user.name}">User name</th>
+									<th th:text="#{user.email}">Email</th>
+									<th th:text="#{user.role}">Role</th>
+									<th th:text="#{user.status}">Status</th>
+									<th th:text="#{admin.actions}">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>1</td>
+									<td>
+										<input type="text"  th:field="*{username}"/>
+									</td>
+									<td>
+										<input type="text"  th:field="*{email}"/>
+									</td>
+									<td>
+										<input type="text"  th:field="*{role.role}"/>
+									</td>
+									<td>
+										<input type="text"  th:field="*{userStatus}"/>
+									</td>
+									<td>
+										<button class="button" type="submit" name="save"
+											th:text="#{admin.save}">Save</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</form>
+				</div>
+			</div>
+
 		</div>
-		
+
 	</div>
 </body>
 </html>

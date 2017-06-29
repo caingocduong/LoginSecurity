@@ -45,8 +45,8 @@ public class AppConfig {
 	@Bean
 	public ResourceBundleMessageSource messageSource() {
 		ResourceBundleMessageSource rb = new ResourceBundleMessageSource();
-		// Load property in message/validator.properties
-		rb.setBasenames(new String[] { "messages/validator" });
+		// Load property in properties.properties
+		rb.setBasenames("properties");
 		return rb;
 	}
 	

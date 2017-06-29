@@ -27,7 +27,7 @@ public class MyPasswordEncoder implements PasswordEncoder{
 	public boolean matches(CharSequence rawPassword, String encodedPassword) {
 		try {
 			if(ps.verifyPassword(rawPassword.toString(), encodedPassword)){
-				
+				logger.info(ps.verifyPassword(rawPassword.toString(), encodedPassword)+"");
 				return true;
 			}
 		} catch (CannotPerformOperationException e) {

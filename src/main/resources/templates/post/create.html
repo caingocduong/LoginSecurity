@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout::head">
+<meta charset="UTF-8" />
+<title>Welcome to Spring MVC Blog</title>
+</head>
+<body>
+	<header th:replace="layout::header"></header>
+	<form action="#" th:action="@{/posts/create}" method="POST">
+		<div>
+			<label>Title</label> 
+			<input type="text" />
+		</div>
+		<div>
+			<label>Body</label>
+			<textarea rows="5" cols="24"></textarea>
+		</div>
+		<div>
+			<button type="submit" name="create">Create</button>
+			<a href="#" th:href="@{/index}">[Cancel]</a>
+		</div>
+	</form>
+	<footer th:replace="layout::footer"></footer>
+</body>
+
+</html>

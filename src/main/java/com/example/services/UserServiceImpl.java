@@ -1,5 +1,7 @@
 package com.example.services;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,23 @@ public class UserServiceImpl implements UserService{
 		Role userRole = roleRepo.findByRole("USER");
 		user.setRole(userRole);
 		userRepo.save(user);
+	}
+
+	@Override
+	public List<User> findAll() {
+		
+		return userRepo.findAll();
+	}
+
+	@Override
+	public void deleteUser(int id) {
+		userRepo.delete(id);
+	}
+
+	@Override
+	public User findById(int id) {
+		
+		return userRepo.findOne(id);
 	}
 
 }

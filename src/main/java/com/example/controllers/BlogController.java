@@ -49,6 +49,12 @@ public class BlogController {
 		return "post/view";
 	}
 	
+	@GetMapping("/posts/create")
+	public String createPost(){
+		
+		return "post/create";
+	}
+	
 	@GetMapping("/posts/view/search/{author}")
 	public String listPostsOfOneAuthor(@PathVariable String author, Model model, Pageable pageable){
 		Page<PostDTO> resultPage = postService.findAll(author, pageable);
