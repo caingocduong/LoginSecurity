@@ -4,18 +4,45 @@
 <head th:replace="layout::head">
 <meta charset="UTF-8" />
 <title>Welcome to Spring MVC Blog</title>
+<link rel="stylesheet" type="text/css" href="../../static/css/create.css"
+	th:href="@{/css/create.css}" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 	<header th:replace="layout::header"></header>
-	<form action="#" th:action="@{/posts/create}" method="POST">
-		<div>
-			<label>Title</label> 
-			<input type="text" />
-		</div>
-		<div>
-			<label>Body</label>
-			<textarea rows="5" cols="24"></textarea>
-		</div>
+	<form action="#" th:action="@{/posts/create}" th:object="${post}" method="POST">
+		<table class="rwd-table">
+			<thead>
+				<tr>
+					<th th:text="#{post.row}">Row</th>
+					<th th:text="#{post.title}">Title</th>
+					<th th:text="#{post.body}">Body</th>
+					<th>
+						<button type="submit" name="addRow" th:text="#{post.row.add}">Add row</button>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="post,rowStat : ${allPosts}">
+					<td th:text="${rowStat.count}">1</td>
+					<td>
+						<input type="text" th:field="*{title}"/>
+					</td>
+					<td>
+						<input type="text" th:field="*{body}"/>
+					</td>
+					<td>
+						<button type="submit" name="removeRow" 
+								th:value="${rowStat.index}" th:text="post.row.remove">Remove row</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 		<div>
 			<button type="submit" name="create">Create</button>
 			<a href="#" th:href="@{/index}">[Cancel]</a>

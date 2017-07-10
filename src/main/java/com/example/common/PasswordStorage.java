@@ -53,7 +53,7 @@ public class PasswordStorage implements PasswordEncoder{
 		SecureRandom secureRandom = new SecureRandom();
 		byte[] salt = new byte[SALT_BYTE_SIZE];
 		secureRandom.nextBytes(salt);
-		
+		logger.info(""+salt);
 		return salt;
 	}
 	

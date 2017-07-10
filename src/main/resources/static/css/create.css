@@ -1,0 +1,60 @@
+.rwd-table {
+  background: #34495E;
+  color: #fff;
+  border-radius: .4em;
+  overflow: hidden;
+}
+.rwd-table tr {
+  border-color: #46637f;
+}
+.rwd-table th, .rwd-table td {
+  margin: .5em 1em;
+}
+@media (min-width: 480px) {
+  .rwd-table th, .rwd-table td {
+    padding: 1em !important;
+  }
+}
+.rwd-table th, .rwd-table td:before {
+  color: #dd5;
+}
+.rwd-table button{
+	color: black;
+}
+.rwd-table input{
+	color: black;
+}
+.rwd-table lable{
+	color : #eee;
+}
+.rwd-table select, .rwd-table option{
+	color: black;
+}
+
+
+#delete_message
+{
+	display:none;
+	position:fixed;
+	top:0px;
+	width:100%;
+	height:150px;
+	background-color:#5882FA;
+	text-align:center;
+}
+#delete_message h2
+{
+	color:#0431B4;
+}
+#delete,#cancel
+{
+	border:none;
+	background:none;
+	width:100px;
+	height:40px;
+	font-size:18px;
+	border-radius:5px;
+	border:2px solid white;
+	margin:10px;
+	color:#CED8F6;
+}

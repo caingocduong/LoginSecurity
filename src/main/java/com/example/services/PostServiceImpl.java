@@ -76,4 +76,9 @@ public class PostServiceImpl implements PostService{
 		return PostMapper.mapEntityPageIntoPage(pageable, pageResult);
 	}
 
+	@Override
+	public void save(Post post) {
+		postRepo.save(post);
+	}
+
 }

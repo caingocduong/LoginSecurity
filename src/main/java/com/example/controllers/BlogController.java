@@ -1,6 +1,9 @@
 package com.example.controllers;
 
 import java.security.Principal;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.common.PageWrapper;
 import com.example.common.PostDTO;
@@ -54,6 +59,31 @@ public class BlogController {
 		
 		return "post/create";
 	}
+	
+	@PostMapping("/posts/create")
+	public String createNewPost(final List<Post> posts){
+		for(Post post : posts){
+			postService.save(post);
+		}
+		
+		return "post/index";
+	}
+	
+	@RequestMapping(value="/post/create", params={"addRow"})
+	public String addRow(final List<Post> posts){
+		posts.add(new Post());
+		
+		return "post/create";
+	}
+	
+	@RequestMapping(value="/post/create", params={"removeRow"})
+	public String removewRow(final List<Post> posts, final HttpServletRequest req){
+		final Integer rowId = Integer.valueOf(req.getParameter("removeRow"));
+		posts.remove(rowId.intValue());
+		
+		return "post/create";
+	}
+	
 	
 	@GetMapping("/posts/view/search/{author}")
 	public String listPostsOfOneAuthor(@PathVariable String author, Model model, Pageable pageable){

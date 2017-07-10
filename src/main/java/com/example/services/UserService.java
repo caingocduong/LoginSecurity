@@ -10,4 +10,5 @@ public interface UserService {
 	List<User> findAll();
 	void deleteUser(int id);
 	User findById(int id);
+	void updateUser(int id,String username, String email, int role_id, String status);
 }

@@ -87,3 +87,37 @@ h1 {
 .rwd-table input{
 	color: black;
 }
+.rwd-table lable{
+	color : #eee;
+}
+.rwd-table select, .rwd-table option{
+	color: black;
+}
+
+
+#delete_message
+{
+	display:none;
+	position:fixed;
+	top:0px;
+	width:100%;
+	height:150px;
+	background-color:#5882FA;
+	text-align:center;
+}
+#delete_message h2
+{
+	color:#0431B4;
+}
+#delete,#cancel
+{
+	border:none;
+	background:none;
+	width:100px;
+	height:40px;
+	font-size:18px;
+	border-radius:5px;
+	border:2px solid white;
+	margin:10px;
+	color:#CED8F6;
+}

@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,17 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.common.UserStatus;
+import com.example.exceptions.EmailExistedException;
 import com.example.exceptions.UserAccessDeniedException;
 import com.example.exceptions.UserNotFoundException;
+import com.example.models.Role;
 import com.example.models.User;
+import com.example.services.RoleService;
 import com.example.services.UserService;
 
 @Controller
@@ -27,14 +28,27 @@ public class AdminController {
 	private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private RoleService roleService;
 	
+	@ModelAttribute("allRoles")
+	public List<Role> getAllRole(){
+		
+		return roleService.findAll();
+	}
 	@ModelAttribute("allUsers")
 	public List<User> getAllUser(){
 		
 		return this.userService.findAll();
 	}
+	@ModelAttribute("allStatus")
+	public List<UserStatus> getAllStatus(){
+		List<UserStatus> userStatus = Arrays.asList(UserStatus.values());
+		
+		return userStatus;
+	}
 	
-	@GetMapping("/admin/home")
+	@RequestMapping("/admin/home")
 	public String adminHome(Model model) throws Exception{
 //		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 //		User user = userService.findByEmail(auth.getName());
@@ -67,7 +81,7 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value="/admin/home", params={"deleteUser"})
-	public String deleteUser(final User user, final BindingResult bindingResult, final HttpServletRequest req){
+	public String deleteUser(final User user, final HttpServletRequest req){
 		final Integer userId= Integer.valueOf(req.getParameter("deleteUser"));
 		userService.deleteUser(userId.intValue());
 		
@@ -75,7 +89,7 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value="/admin/home", params={"edit"})
-	public String editUser(final User user, final BindingResult bindingResult,HttpServletRequest req, final Model model){
+	public String editUser(final User user,HttpServletRequest req, final Model model){
 		final Integer userId= Integer.valueOf(req.getParameter("edit"));
 		User u = userService.findById(userId.intValue()); 
 		model.addAttribute("user",u);
@@ -84,8 +98,21 @@ public class AdminController {
 	}
 	
 	@RequestMapping(value="/admin/home", params={"save"})
-	public String saveUser(final BindingResult bindingResult, @ModelAttribute(value="user") User user){
-		logger.info("aaa");
+	public String saveUser(@ModelAttribute(value="user") User user) throws Exception{
+		List<User> users = userService.findAll();
+		for(User u : users){
+			if(u.getId()!=user.getId()&&u.getEmail().equals(user.getEmail())){
+				throw new EmailExistedException();
+			}
+		}
+		userService.updateUser(user.getId(),user.getUsername(), user.getEmail(), user.getRole().getId(), user.getUserStatus());
+		
 		return "redirect:/admin/home";
+	}
+	@ExceptionHandler(EmailExistedException.class)
+	public String handleEmailExistedException(Model model){
+		model.addAttribute("emailError", "Email have existed. Edit have failed.");
+		
+		return "admin/home";
 	}
 }

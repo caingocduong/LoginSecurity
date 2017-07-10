@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class AppConfig {
 	//=================================== Data ==================================================
-	@Bean
+	@Bean(name="dataSource")
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
@@ -46,7 +46,7 @@ public class AppConfig {
 	public ResourceBundleMessageSource messageSource() {
 		ResourceBundleMessageSource rb = new ResourceBundleMessageSource();
 		// Load property in properties.properties
-		rb.setBasenames("properties");
+		rb.setBasenames("properties","application");
 		return rb;
 	}
 	
