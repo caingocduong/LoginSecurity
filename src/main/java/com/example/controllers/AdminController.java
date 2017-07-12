@@ -4,10 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,22 +54,21 @@ public class AdminController {
 	
 	@RequestMapping("/admin/home")
 	public String adminHome(Model model) throws Exception{
-//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//		User user = userService.findByEmail(auth.getName());
-//		if(user == null){
-//			
-//			throw new UserNotFoundException();
-//		} else {
-//			//logger.info("->>>>>>"+auth.getAuthorities()); 
-//			if(auth.getAuthorities().toString().equals("[ADMIN]")){
-//				model.addAttribute("username","Hello "+user.getUsername()+"("+user.getEmail()+")");
-//
-//				return "admin/home";
-//			}
-//			
-//			throw new UserAccessDeniedException();
-//		}
-		return "admin/home";
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		User user = userService.findByEmail(auth.getName());
+		if(user == null){
+			
+			throw new UserNotFoundException();
+		} else {
+			//logger.info("->>>>>>"+auth.getAuthorities()); 
+			if(auth.getAuthorities().toString().equals("[ADMIN]")){
+				model.addAttribute("username","Hello "+user.getUsername()+"("+user.getEmail()+")");
+
+				return "admin/home";
+			}
+			
+			throw new UserAccessDeniedException();
+		}
 	}
 	
 	@ExceptionHandler(UserNotFoundException.class)
@@ -115,4 +118,22 @@ public class AdminController {
 		
 		return "admin/home";
 	}
+	
+	private boolean isRememberMeAuthenticated(){
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if(auth == null){
+			
+			return false;
+		}
+		
+		return RememberMeAuthenticationToken.class.isAssignableFrom(auth.getClass());
+	}
+	
+	private void setRememberMeTargetUrlToSession(HttpServletRequest request){
+		HttpSession session = request.getSession(false);
+		if(session != null){
+			session.setAttribute("targetUrl", "/admin/home");
+		}
+	}
+	
 }

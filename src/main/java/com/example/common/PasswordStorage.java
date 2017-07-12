@@ -53,7 +53,7 @@ public class PasswordStorage implements PasswordEncoder{
 		SecureRandom secureRandom = new SecureRandom();
 		byte[] salt = new byte[SALT_BYTE_SIZE];
 		secureRandom.nextBytes(salt);
-		logger.info(""+salt);
+		
 		return salt;
 	}
 	
@@ -63,7 +63,11 @@ public class PasswordStorage implements PasswordEncoder{
 		try {
 			PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, bytes*8);
 			SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
-			
+			logger.info("key: "+DatatypeConverter.printBase64Binary(skf.generateSecret(spec).getEncoded()));
+			logger.info("pass: "+DatatypeConverter.printBase64Binary(password.toString().getBytes()));
+			logger.info("salt aaa:"+DatatypeConverter.printBase64Binary(salt));
+			logger.info("iteration: "+ iterations);
+			logger.info("byte: "+bytes);
 			return skf.generateSecret(spec).getEncoded();
 		} catch (NoSuchAlgorithmException ex) {
 			
@@ -93,6 +97,9 @@ public class PasswordStorage implements PasswordEncoder{
 			throws CannotPerformOperationException, InvalidHasException
 	{
 		String[] params = correctHash.split(":");
+		for(String s : params){
+			System.out.println(s);
+		}
 		if(params.length != HASH_SECTIONS){
 			throw new InvalidHasException("Fields are missing from the password hash");
 		}
@@ -122,6 +129,8 @@ public class PasswordStorage implements PasswordEncoder{
 		byte[] hash = null;
 		try {
 			hash = fromBase64(params[PBKDF2_INDEX]);
+			System.out.println("hash: "+hash);
+			System.out.println("hashString: "+DatatypeConverter.printBase64Binary(hash));
 		} catch (IllegalArgumentException ex) {
 			throw new InvalidHasException("Base64 decoding of pbkdf2 output failed.");
 		}
@@ -137,7 +146,7 @@ public class PasswordStorage implements PasswordEncoder{
 		}
 		
 		byte[] testHash = pbkdf2(password, salt, iterations, hash.length);
-		
+		logger.info("correctHash: "+ DatatypeConverter.printBase64Binary(testHash));
 		return slowEquals(hash, testHash);
 	}
 	
@@ -157,6 +166,7 @@ public class PasswordStorage implements PasswordEncoder{
 	@Override
 	public String encode(CharSequence rawPassword) {
 		byte[] salt = createSalt();
+		logger.info("created salt:  "+salt);
 		try {
 			return createHash(rawPassword.toString(), salt);
 		} catch (CannotPerformOperationException e) {

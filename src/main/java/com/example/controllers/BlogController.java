@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +32,12 @@ public class BlogController {
 	PostService postService;
 	
 	@GetMapping({"/","/index"})
-	public String welcomeHomePage(Model model, Pageable pageable, Principal principal){
+	public String welcomeHomePage(Model model, Pageable pageable, Principal principal, HttpSession session){
 		Page<Post> postPage = postService.findAll(pageable);
 		PageWrapper<Post> page = new PageWrapper<Post>(postPage, "/index");
 		model.addAttribute("posts", page.getContent());
 		model.addAttribute("page", page);
-	
+		
 		if(principal != null){
 			model.addAttribute("username",principal.getName());
 		} else {
@@ -94,4 +95,5 @@ public class BlogController {
 		
 		return "post/index";
 	}
+	
 }

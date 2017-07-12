@@ -14,6 +14,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.example.common.PasswordStorage;
+
 @Configuration
 @ComponentScan("com.example.services")
 @EnableTransactionManagement
@@ -61,5 +63,12 @@ public class AppConfig {
 		transactionManager = jpaTransactionManager;
 		
 		return transactionManager;
+	}
+	
+
+	@Bean
+	public PasswordStorage passwordEncoder(){
+		
+		return new PasswordStorage();
 	}
 }
