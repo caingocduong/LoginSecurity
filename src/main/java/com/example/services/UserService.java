@@ -11,4 +11,7 @@ public interface UserService {
 	void deleteUser(int id);
 	User findById(int id);
 	void updateUser(int id,String username, String email, int role_id, String status);
+	void updatePasswordUser(String password,String salt, int id);
+	void updateResetTokenPasswordUser(String token, int id);
+	void updateStatusUser(String status, int id);
 }

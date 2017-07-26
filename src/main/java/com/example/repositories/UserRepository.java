@@ -19,4 +19,18 @@ public interface UserRepository extends JpaRepository<User, Integer>{
 					@Param("role_id")int role_id,@Param("status")String status);
 	User findByEmail(String email);
 	
+	@Modifying(clearAutomatically = true)
+	@Transactional
+	@Query(value="Update users Set reset_password_token = :token Where user_id = :id", nativeQuery=true)
+	void updateUser(@Param("token") String token, @Param("id") int id);
+	
+	@Modifying(clearAutomatically = true)
+	@Transactional
+	@Query(value="Update users Set password = :password, salt = :salt Where user_id = :id", nativeQuery=true)
+	void updateUser(@Param("password") String password,@Param("salt") String salt , @Param("id") int id);
+	
+	@Modifying(clearAutomatically = true)
+	@Transactional
+	@Query(value="Update users Set user_status = :status Where user_id = :id", nativeQuery=true)
+	void updateStatusUser(@Param("status") String status, @Param("id") int id);
 }

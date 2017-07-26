@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService{
 		} catch (CannotPerformOperationException e) {
 			logger.info(e.getMessage());
 		}
-		user.setUserStatus(UserStatus.ACTIVE.name());
+		user.setUserStatus(UserStatus.PENDING.name());
 		Role userRole = roleRepo.findByRole("USER");
 		user.setRole(userRole);
 		userRepo.save(user);
@@ -80,6 +80,21 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void updateUser(int id,String username, String email, int role_id, String status) {
 		userRepo.updateUser(id,username, email, role_id, status);
+	}
+
+	@Override
+	public void updatePasswordUser(String password, String salt, int id) {
+		userRepo.updateUser(password,salt, id);
+	}
+
+	@Override
+	public void updateResetTokenPasswordUser(String token, int id) {
+		userRepo.updateUser(token, id);
+	}
+
+	@Override
+	public void updateStatusUser(String status, int id) {
+		userRepo.updateStatusUser(status, id);
 	}
 
 }

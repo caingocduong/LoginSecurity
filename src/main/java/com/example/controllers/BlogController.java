@@ -1,5 +1,7 @@
 package com.example.controllers;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.common.PageWrapper;
 import com.example.common.PostDTO;
@@ -26,6 +30,8 @@ import com.example.services.PostService;
 
 @Controller
 public class BlogController {
+	public static final String uploadingdir = System.getProperty("user.dir") + "/uploadingdir/";
+	
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(BlogController.class);
 	@Autowired
@@ -95,5 +101,33 @@ public class BlogController {
 		
 		return "post/index";
 	}
+	
+	@GetMapping("/uploadingFile")
+	public String uploadingFileGet(Model model){
+		File file = new File(uploadingdir);
+		model.addAttribute("files", file.listFiles());
+		logger.info("file "+file.listFiles().length);
+		return "post/uploadingFile";
+	}
+	
+	@PostMapping("/uploadingFile")
+	public String uploadingFilePost(@RequestParam("uploadingFiles") MultipartFile[] uploadingFiles, Model model) throws IOException{
+		logger.info("size "+uploadingFiles.length);
+		for(MultipartFile uploadedFile : uploadingFiles){
+			File file = new File(uploadingdir + uploadedFile.getOriginalFilename());
+			uploadedFile.transferTo(file);
+		}
+		
+		return "redirect:/uploadingFile";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

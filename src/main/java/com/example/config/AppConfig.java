@@ -1,14 +1,22 @@
 package com.example.config;
 
+import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,6 +28,11 @@ import com.example.common.PasswordStorage;
 @ComponentScan("com.example.services")
 @EnableTransactionManagement
 public class AppConfig {
+	@Value("${mail.username}")
+	private String username;
+	@Value("${mail.password}")
+	private String password;
+	
 	//=================================== Data ==================================================
 	@Bean(name="dataSource")
 	public DataSource dataSource() {
@@ -70,5 +83,32 @@ public class AppConfig {
 	public PasswordStorage passwordEncoder(){
 		
 		return new PasswordStorage();
+	}
+	
+	@Bean
+	public JavaMailSender getMailSender(){
+		Properties javaMailProperties = System.getProperties();
+		javaMailProperties.put("mail.smtp.starttls.enable", "true");
+		javaMailProperties.put("mail.starttls.auth", "true");
+		javaMailProperties.put("mail.transport.protocol", "smtp");
+		javaMailProperties.put("mail.debug", "true");
+
+		Session session = Session.getDefaultInstance(javaMailProperties, new Authenticator() {
+
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);// Specify the Username and the PassWord
+			}
+		});
+		session.setDebug(false);
+		
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost("smtp.gmail.com");
+		mailSender.setPort(587);
+		mailSender.setUsername(username);
+		mailSender.setPassword(password);
+		mailSender.setSession(session);
+		mailSender.setJavaMailProperties(javaMailProperties);
+
+		return mailSender;
 	}
 }

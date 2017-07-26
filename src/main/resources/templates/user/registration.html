@@ -1,29 +1,34 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-	<title>Registration Form</title>
-	<link rel="stylesheet" type="text/css" href="../static/css/registration.css" th:href="@{/css/registration.css}" />
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<title>Registration Form</title>
+<link rel="stylesheet" type="text/css"
+	href="../static/css/registration.css"
+	th:href="@{/css/registration.css}" />
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
 	<form th:action="@{/}" method="get">
-		<button class="btn btn-md btn-warning btn-block" type="Submit">Go To Login Page</button>
-	</form>	
-	
+		<button class="btn btn-md btn-warning btn-block" type="Submit">Go
+			To Login Page</button>
+	</form>
+
 	<div class="container">
 		<div class="row">
 			<div class="col-md-6 col-md-offset-3">
-				<form action="#" th:action="@{/registration}"
-					th:object="${user}" method="POST" class="form-horizontal"
-					role="form">
+				<form th:action="@{/registration}" th:object="${user}" method="POST"
+					class="form-horizontal" role="form">
 					<h2>Registration Form</h2>
 					<div class="form-group">
 						<div class="col-sm-9">
-						<input type="text" th:field="*{username}" placeholder="Username"
-								class="form-control" /> 
-						<label th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
+							<input type="text" th:field="*{username}" placeholder="Username"
+								class="form-control" /> <label
+								th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
 								class="validation-message">User name existed</label>
 						</div>
 					</div>
@@ -41,23 +46,40 @@
 							<input type="password" th:field="*{password}"
 								placeholder="Password" class="form-control" /> <label
 								th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
-								class="validation-message">Password must have to at least 6 characters</label>
+								class="validation-message">Password must have to at
+								least 6 characters</label>
 						</div>
 					</div>
 
 					<div class="form-group">
 						<div class="col-sm-9">
-							<button type="submit" class="btn btn-primary btn-block">Register User</button>
+							<button type="submit" class="btn btn-primary btn-block">Register
+								User</button>
 						</div>
 					</div>
-					
-					<span th:utext="${messageSuccess}"></span>
-					
-					
 				</form>
+
+				<form th:if="${registerSuccessfully}"
+					th:action="@{/registration}" method="POST" id="activationForm"
+					class="form-horizontal" role="form">
+					<h4>You have registed successfully. Go to email that you have
+						registed to active your account.</h4>
+					<h4>If you don't receive any email, please click "Resend".</h4>
+					<div class="form-group">
+						<div class="col-sm-9">
+							<button onclick="showInform();" type="submit"
+								class="btn btn-primary btn-block">Resend</button>
+						</div>
+					</div>
+				</form>
+
 			</div>
 		</div>
 	</div>
-
+	<script>
+		function showInform(){
+			alert("We just re-send a link to your email. Please check again. ");
+		}
+	</script>
 </body>
 </html>

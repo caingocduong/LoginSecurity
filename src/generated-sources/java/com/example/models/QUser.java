@@ -28,6 +28,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath password = createString("password");
 
+    public final StringPath resetPasswordToken = createString("resetPasswordToken");
+
     public final QRole role;
 
     public final StringPath salt = createString("salt");
